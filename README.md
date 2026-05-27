@@ -1,6 +1,7 @@
 # HIgh Level ASeMbly(HILASM)
 ## Short Descriptioms
 The overall goal of this project is to create a high level assembly language that is easy to work with.
+The goal of having two different versions is to offer a more high-speed and compatible version.
 
 ## Goals
 Overall Project Goals
@@ -9,6 +10,7 @@ Overall Project Goals
 - [ ] Simulation Mode
 - [ ] Compilation to all ISAs for ASM
 - [ ] Docs written for all prts of language
+- [ ] Self-compiled
 
 
 All the ISAs aimed to be included are:
