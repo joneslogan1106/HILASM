@@ -4,14 +4,16 @@ The overall goal of this project is to create a high level assembly language tha
 The goal of having two different versions is to offer a more high-speed and compatible version.
 
 ## Goals
-Overall Project Goals
+### Overall Project Goals
 - [ ] Written in C
 - [ ] Written in Python
 - [ ] Simulation Mode
 - [ ] Compilation to all ISAs for ASM
 - [ ] Docs written for all prts of language
 - [ ] Self-compiled
-
+### QOL Goals
+- [ ] Implementation of Variables
+- [ ] Implementation of "stack-based variables"
 
 All the ISAs aimed to be included are:
 - [ ] x86
