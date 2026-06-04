@@ -20,23 +20,43 @@ def iota(reset=False):
         return iota_counter
 
 # Generic Variables
-OP_ADD   = iota()
-OP_SUB   = iota()
-OP_MUL   = iota()
-OP_DIV   = iota()
-OP_PRINT = iota()
+OP_ADD    = iota()
+OP_SUB    = iota()
+OP_MUL    = iota()
+OP_DIV    = iota()
+OP_PRINT  = iota()
+OP_ENDL   = iota()
+OP_NUM    = iota()
 
 def simulate_program():
     program = [
-        ["add", "4", "5", "print"],
-        ["sub 10 9 print"],
-        ["mult 10 5 print"],
-        ["div 500 10 print"]
-    ]
+        ["printa", "add2", "4", "5", "endl"],
+        ["printa", "sub2", "10", "9", "endl"],
+        ["printa", "mult2", "10", "5", "endl"],
+        ["printa", "div2", "500", "10", "endl"]
+    ] # At this moment, currently hardcoded
+    keywords = ["printa", "add"]
 
-    for i in
 
-
+    numbered_program = [] # Program as pure numeric values
+    for line in program:
+        for bit in line:
+            if bit == "printa":
+                numbered_program.append([program.index(line) + 1, [OP_PRINT, 0]]) # says program line, print operation, with arithmetic funvtion
+            elif bit[:-1] == "add":
+                numbered_program.append([program.index(line) + 1, [OP_ADD, int(bit[3:])]]) # says program line, adding operation, then ading the information that there are x numbers being added
+            elif bit[:-1] == "sub":
+                numbered_program.append([program.index(line) + 1, [OP_SUB, int(bit[3:])]]) # says program line, subtrction operation, with x arguments
+            elif bit[:-1] == "mult":
+                numbered_program.append([program.index(line) + 1, [OP_MUL, int(bit[4:])]]) # says program line, multiiply , x numbers
+            elif bit[:-1] == "div":
+                numbered_program.append([program.index(line) + 1, [OP_DIV, int(bit[3:])]])
+            elif bit == "endl":
+                numbered_program.append([program.index(line) + 1, OP_ENDL]) # js says its the end of the line
+            elif isinstance(int(bit), int):
+                numbered_program.append([program.index(line) + 1, [OP_NUM, int(bit)]]) # says program line, its a number, then what that number is
+        print(numbered_program)
+# Basic command line styuff
 def command_line_utils():
     if sys.argv[1] == "help":
         print("""usage: ./pyhilasm.py program_file [args]
