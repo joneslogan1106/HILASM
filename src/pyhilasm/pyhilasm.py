@@ -77,7 +77,12 @@ def simulate_program():
                     'program_line': program.index(line) + 1,
                     'operand': ["INT", OP_INT, int(bit)]
                 })
-        print(ast)
+    #for i in ast:
+    #    print(ast[i]['operand'])
+    current_program_line = 1
+    for i in range(len(ast)-1):
+        if ast[i]['operand'][1] == OP_ENDL:
+            print("end line found")
 
 # Basic command line styuff
 def command_line_utils():
