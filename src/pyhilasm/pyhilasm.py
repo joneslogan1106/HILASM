@@ -15,7 +15,7 @@ def iota(reset=False):
         iota_counter = iota_local
         return iota_local
     else:
-        iota_local = 0
+        iota_local = -1
         iota_counter = iota_local
         return iota_counter
 
@@ -26,7 +26,7 @@ OP_MUL    = iota()
 OP_DIV    = iota()
 OP_PRINT  = iota()
 OP_ENDL   = iota()
-OP_NUM    = iota()
+OP_INT    = iota()
 
 def simulate_program():
     program = [
@@ -38,24 +38,47 @@ def simulate_program():
     keywords = ["printa", "add"]
 
 
-    numbered_program = [] # Program as pure numeric values
+    ast = [] # Program as pure numeric values
+    numbered_program = []
     for line in program:
         for bit in line:
             if bit == "printa":
-                numbered_program.append([program.index(line) + 1, [OP_PRINT, 0]]) # says program line, print operation, with arithmetic funvtion
+                ast.append({
+                    'program_line': program.index(line) + 1,
+                    'operand': ["PRINT", OP_PRINT, 0]
+                })
             elif bit[:-1] == "add":
-                numbered_program.append([program.index(line) + 1, [OP_ADD, int(bit[3:])]]) # says program line, adding operation, then ading the information that there are x numbers being added
+                ast.append({
+                    'program_line': program.index(line) + 1,
+                    'operand': ["ADD", OP_ADD, int(bit[3:])]
+                })
             elif bit[:-1] == "sub":
-                numbered_program.append([program.index(line) + 1, [OP_SUB, int(bit[3:])]]) # says program line, subtrction operation, with x arguments
+                ast.append({
+                    'program_line': program.index(line) + 1,
+                    'operand': ["SUB", OP_SUB, int(bit[3:])]
+                })
             elif bit[:-1] == "mult":
-                numbered_program.append([program.index(line) + 1, [OP_MUL, int(bit[4:])]]) # says program line, multiiply , x numbers
+                ast.append({
+                    'program_line': program.index(line) + 1,
+                    'operand': ["MUL", OP_MUL, int(bit[4:])]
+                })
             elif bit[:-1] == "div":
-                numbered_program.append([program.index(line) + 1, [OP_DIV, int(bit[3:])]])
+                ast.append({
+                    'program_line': program.index(line) + 1,
+                    'operand': ["DIV", OP_DIV, int(bit[3:])]
+                })
             elif bit == "endl":
-                numbered_program.append([program.index(line) + 1, OP_ENDL]) # js says its the end of the line
+                ast.append({
+                    'program_line': program.index(line) + 1,
+                    'operand': ["ENDL", OP_ENDL]
+                })
             elif isinstance(int(bit), int):
-                numbered_program.append([program.index(line) + 1, [OP_NUM, int(bit)]]) # says program line, its a number, then what that number is
-        print(numbered_program)
+                ast.append({
+                    'program_line': program.index(line) + 1,
+                    'operand': ["INT", OP_INT, int(bit)]
+                })
+        print(ast)
+
 # Basic command line styuff
 def command_line_utils():
     if sys.argv[1] == "help":
