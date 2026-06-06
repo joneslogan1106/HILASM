@@ -77,13 +77,26 @@ def simulate_program():
                     'program_line': program.index(line) + 1,
                     'operand': ["INT", OP_INT, int(bit)]
                 })
-    #for i in ast:
-    #    print(ast[i]['operand'])
-    current_program_line = 1
-    for i in range(len(ast)-1):
-        if ast[i]['operand'][1] == OP_ENDL:
-            print("end line found")
 
+    #flags, helps the program know whats happenning
+    print_arithmetic_flag = False
+    add_flag = [False, 0]
+    makeshift_stack = []
+    for i in range(len(ast)-1): 
+        if ast[i]['operand'][1] == OP_PRINT:
+            if ast[i]['operand'][2] == 0: # This means we are printing the result of an arithmetic operation
+                print_arithmetic_flag = True
+        elif ast[i]['operand'][1] == OP_ADD:
+            add_flag = [True, ast[i]['operand'][2]]
+        elif ast[i]['operand'][1] == OP_INT:
+            makeshift_stack.append(ast[i]['operand'][2])
+        elif print_arithmetic_flag == True and len(makeshift_stack) == add_flag[1]:
+            print("made it")
+            y = makeshift_stack.pop()
+            x = makeshift_stack.pop()
+            print(x+y)
+        elif ast[i]['operand'][1] == OP_ENDL: # DO NOT REMOVE THISTATEMENT
+            pass
 # Basic command line styuff
 def command_line_utils():
     if sys.argv[1] == "help":
