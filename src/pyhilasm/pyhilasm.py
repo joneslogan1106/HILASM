@@ -82,7 +82,7 @@ def simulate_program():
     print_arithmetic_flag = False
     add_flag = [False, 0]
     makeshift_stack = []
-    for i in range(len(ast)-1): 
+    for i in range(len(ast)-1):
         if ast[i]['operand'][1] == OP_PRINT:
             if ast[i]['operand'][2] == 0: # This means we are printing the result of an arithmetic operation
                 print_arithmetic_flag = True
@@ -90,13 +90,17 @@ def simulate_program():
             add_flag = [True, ast[i]['operand'][2]]
         elif ast[i]['operand'][1] == OP_INT:
             makeshift_stack.append(ast[i]['operand'][2])
-        elif print_arithmetic_flag == True and len(makeshift_stack) == add_flag[1]:
-            print("made it")
+        elif print_arithmetic_flag == True and len(makeshift_stack) == add_flag[1] and len(makeshift_stack) >= 2:
             y = makeshift_stack.pop()
             x = makeshift_stack.pop()
             print(x+y)
+            print_arithmetic_flag = False
+            add_flag = [False, 0]
+            makeshift_stack =[]
         elif ast[i]['operand'][1] == OP_ENDL: # DO NOT REMOVE THISTATEMENT
-            pass
+            print_arithmetic_flag = False
+            add_flag = [False, 0]
+            makeshift_stack = []
 # Basic command line styuff
 def command_line_utils():
     if sys.argv[1] == "help":
