@@ -33,9 +33,9 @@ def simulate_program():
         ["printa", "add2", "4", "5", "endl"],
         ["printa", "sub2", "10", "9", "endl"],
         ["printa", "mult2", "10", "5", "endl"],
-        ["printa", "div2", "500", "10", "endl"]
+        ["printa", "div2", "500", "10", "endl"],
+        ["printa", "sub3", "5", "9", "3", "endl"]
     ] # At this moment, currently hardcoded
-    keywords = ["printa", "add"]
 
 
     ast = [] # Program as pure numeric values
@@ -81,15 +81,34 @@ def simulate_program():
     #flags, helps the program know whats happenning
     print_arithmetic_flag = False
     add_flag = [False, 0]
+    sub_flag = [False, 0]
     makeshift_stack = []
     for i in range(len(ast)-1):
+        print(ast[i])
+        print(print_arithmetic_flag == True and len(makeshift_stack) == sub_flag[1] and len(makeshift_stack) >= 2)
+        print(f"PRINT FLAG: {print_arithmetic_flag} MAKESHIFT_STACK: {makeshift_stack} SUB FLAG: {sub_flag}")
         if ast[i]['operand'][1] == OP_PRINT:
             if ast[i]['operand'][2] == 0: # This means we are printing the result of an arithmetic operation
                 print_arithmetic_flag = True
         elif ast[i]['operand'][1] == OP_ADD:
             add_flag = [True, ast[i]['operand'][2]]
+        elif ast[i]['operand'][1] == OP_SUB:
+            sub_flag = [True, ast[i]['operand'][2]]
         elif ast[i]['operand'][1] == OP_INT:
             makeshift_stack.append(ast[i]['operand'][2])
+        elif print_arithmetic_flag == True and len(makeshift_stack) == sub_flag[1] and len(makeshift_stack) >= 2:
+            subtraction_stack = makeshift_stack
+            subtraction_stack.reverse()
+            print(subtraction_stack)
+            while len(subtraction_stack) > 1:
+                y = subtraction_stack.pop()
+                x = subtraction_stack.pop()
+                
+                subtraction_stack.append(y-x)
+            print(subtraction_stack[0])
+            print_arithmetic_flag = False
+            sub_flag = [False, 0]
+            makeshift_stack = []
         elif print_arithmetic_flag == True and len(makeshift_stack) == add_flag[1] and len(makeshift_stack) >= 2:
             y = makeshift_stack.pop()
             x = makeshift_stack.pop()
