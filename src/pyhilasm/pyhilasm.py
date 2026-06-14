@@ -34,7 +34,10 @@ def simulate_program():
         ["printa", "sub2", "10", "9", "endl"],
         ["printa", "mult2", "10", "5", "endl"],
         ["printa", "div2", "500", "10", "endl"],
-        ["printa", "sub3", "5", "9", "3", "endl"]
+        ["printa", "sub3", "5", "9", "3", "endl"],
+        ["printa", "add3", "2", "5", "8", "endl"],
+        ["printa", "mult3", "59", "9", "38", "endl"],
+        ["printa", "div3", "500", "10", "2", "endl"]
     ] # At this moment, currently hardcoded
 
 
@@ -82,43 +85,63 @@ def simulate_program():
     print_arithmetic_flag = False
     add_flag = [False, 0]
     sub_flag = [False, 0]
+    mul_flag = [False, 0]
+    div_flag = [False, 0]
     makeshift_stack = []
-    for i in range(len(ast)-1):
-        print(ast[i])
-        print(print_arithmetic_flag == True and len(makeshift_stack) == sub_flag[1] and len(makeshift_stack) >= 2)
-        print(f"PRINT FLAG: {print_arithmetic_flag} MAKESHIFT_STACK: {makeshift_stack} SUB FLAG: {sub_flag}")
+    for i in range(len(ast)):
         if ast[i]['operand'][1] == OP_PRINT:
             if ast[i]['operand'][2] == 0: # This means we are printing the result of an arithmetic operation
                 print_arithmetic_flag = True
+        elif ast[i]['operand'][1] == OP_DIV:
+            div_flag = [True, ast[i]['operand'][2]]
+        elif ast[i]['operand'][1] == OP_MUL:
+            mul_flag = [True, ast[i]['operand'][2]]
         elif ast[i]['operand'][1] == OP_ADD:
             add_flag = [True, ast[i]['operand'][2]]
         elif ast[i]['operand'][1] == OP_SUB:
             sub_flag = [True, ast[i]['operand'][2]]
         elif ast[i]['operand'][1] == OP_INT:
             makeshift_stack.append(ast[i]['operand'][2])
+        elif print_arithmetic_flag == True and len(makeshift_stack) == mul_flag[1] and len(makeshift_stack) >= 2:
+            mul_stack = makeshift_stack
+            while len(mul_stack) > 1:
+                x = mul_stack.pop()
+                y = mul_stack.pop()
+
+                mul_stack.append(x*y)
+            print(mul_stack[0])
+        elif print_arithmetic_flag == True and len(makeshift_stack) == div_flag[1] and len(makeshift_stack) >= 2:
+            div_stack = makeshift_stack
+            div_stack.reverse()
+            while len(div_stack) > 1:
+                y = div_stack.pop()
+                x = div_stack.pop()
+
+                div_stack.append(x/y)
+            print(div_stack[0])
         elif print_arithmetic_flag == True and len(makeshift_stack) == sub_flag[1] and len(makeshift_stack) >= 2:
             subtraction_stack = makeshift_stack
             subtraction_stack.reverse()
-            print(subtraction_stack)
             while len(subtraction_stack) > 1:
                 y = subtraction_stack.pop()
                 x = subtraction_stack.pop()
                 
                 subtraction_stack.append(y-x)
             print(subtraction_stack[0])
-            print_arithmetic_flag = False
-            sub_flag = [False, 0]
-            makeshift_stack = []
         elif print_arithmetic_flag == True and len(makeshift_stack) == add_flag[1] and len(makeshift_stack) >= 2:
-            y = makeshift_stack.pop()
-            x = makeshift_stack.pop()
-            print(x+y)
-            print_arithmetic_flag = False
-            add_flag = [False, 0]
-            makeshift_stack =[]
+            add_stack = makeshift_stack
+            while len(add_stack) > 1:
+                y = makeshift_stack.pop()
+                x = makeshift_stack.pop()
+
+                add_stack.append(x+y)
+            print(add_stack[0])
         elif ast[i]['operand'][1] == OP_ENDL: # DO NOT REMOVE THISTATEMENT
             print_arithmetic_flag = False
             add_flag = [False, 0]
+            sub_flag = [False, 0]
+            mul_flag = [False, 0]
+            div_flag = [False, 0]
             makeshift_stack = []
 # Basic command line styuff
 def command_line_utils():
