@@ -102,7 +102,7 @@ def simulate_program():
             sub_flag = [True, ast[i]['operand'][2]]
         elif ast[i]['operand'][1] == OP_INT:
             makeshift_stack.append(ast[i]['operand'][2])
-        elif print_arithmetic_flag == True and len(makeshift_stack) == mul_flag[1] and len(makeshift_stack) >= 2:
+        if print_arithmetic_flag == True and len(makeshift_stack) == mul_flag[1] and len(makeshift_stack) >= 2:
             mul_stack = makeshift_stack
             while len(mul_stack) > 1:
                 x = mul_stack.pop()
@@ -112,12 +112,14 @@ def simulate_program():
             print(mul_stack[0])
         elif print_arithmetic_flag == True and len(makeshift_stack) == div_flag[1] and len(makeshift_stack) >= 2:
             div_stack = makeshift_stack
-            div_stack.reverse()
+            print(f"first div stack {div_stack}")
             while len(div_stack) > 1:
                 y = div_stack.pop()
                 x = div_stack.pop()
+                print(f"during div stack {div_stack}, x: {x}, y: {y}")
 
                 div_stack.append(x/y)
+                print(f"second during div stack {div_stack}")
             print(div_stack[0])
         elif print_arithmetic_flag == True and len(makeshift_stack) == sub_flag[1] and len(makeshift_stack) >= 2:
             subtraction_stack = makeshift_stack
