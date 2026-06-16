@@ -43,41 +43,41 @@ def simulate_program():
 
     ast = [] # Program as pure numeric values
     numbered_program = []
-    for line in program:
+    for line_num, line in enumerate(program, start=1):
         for bit in line:
             if bit == "printa":
                 ast.append({
-                    'program_line': program.index(line) + 1,
+                    'program_line': line_num,
                     'operand': ["PRINT", OP_PRINT, 0]
                 })
             elif bit[:-1] == "add":
                 ast.append({
-                    'program_line': program.index(line) + 1,
+                    'program_line': line_num,
                     'operand': ["ADD", OP_ADD, int(bit[3:])]
                 })
             elif bit[:-1] == "sub":
                 ast.append({
-                    'program_line': program.index(line) + 1,
+                    'program_line': line_num,
                     'operand': ["SUB", OP_SUB, int(bit[3:])]
                 })
             elif bit[:-1] == "mult":
                 ast.append({
-                    'program_line': program.index(line) + 1,
+                    'program_line': line_num,
                     'operand': ["MUL", OP_MUL, int(bit[4:])]
                 })
             elif bit[:-1] == "div":
                 ast.append({
-                    'program_line': program.index(line) + 1,
+                    'program_line': line_num,
                     'operand': ["DIV", OP_DIV, int(bit[3:])]
                 })
             elif bit == "endl":
                 ast.append({
-                    'program_line': program.index(line) + 1,
+                    'program_line': line_num,
                     'operand': ["ENDL", OP_ENDL]
                 })
             elif isinstance(int(bit), int):
                 ast.append({
-                    'program_line': program.index(line) + 1,
+                    'program_line': line_num,
                     'operand': ["INT", OP_INT, int(bit)]
                 })
 
@@ -112,14 +112,12 @@ def simulate_program():
             print(mul_stack[0])
         elif print_arithmetic_flag == True and len(makeshift_stack) == div_flag[1] and len(makeshift_stack) >= 2:
             div_stack = makeshift_stack
-            print(f"first div stack {div_stack}")
+            div_stack.reverse()
             while len(div_stack) > 1:
                 y = div_stack.pop()
                 x = div_stack.pop()
-                print(f"during div stack {div_stack}, x: {x}, y: {y}")
 
-                div_stack.append(x/y)
-                print(f"second during div stack {div_stack}")
+                div_stack.append(y/x)
             print(div_stack[0])
         elif print_arithmetic_flag == True and len(makeshift_stack) == sub_flag[1] and len(makeshift_stack) >= 2:
             subtraction_stack = makeshift_stack
