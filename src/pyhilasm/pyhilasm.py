@@ -152,7 +152,7 @@ cx86 - Compiles program according to the x86 ISA""")
         exit(0)
     elif sys.argv[1] == "sim":
         simulate_program()
-    elif sys.argv[1] == "cx86":
+    elif sys.argv[1] == "cx86-64":
         assert False, "Not implemented"
     else:
         print("Not found")
