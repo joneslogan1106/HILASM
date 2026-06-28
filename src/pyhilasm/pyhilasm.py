@@ -89,18 +89,19 @@ def simulate_program():
     div_flag = [False, 0]
     makeshift_stack = []
     for i in range(len(ast)):
-        if ast[i]['operand'][1] == OP_PRINT:
+        operand = ast[i]['operand'][1]
+        if operand == OP_PRINT:
             if ast[i]['operand'][2] == 0: # This means we are printing the result of an arithmetic operation
                 print_arithmetic_flag = True
-        elif ast[i]['operand'][1] == OP_DIV:
+        elif operand == OP_DIV:
             div_flag = [True, ast[i]['operand'][2]]
-        elif ast[i]['operand'][1] == OP_MUL:
+        elif operand == OP_MUL:
             mul_flag = [True, ast[i]['operand'][2]]
-        elif ast[i]['operand'][1] == OP_ADD:
+        elif operand == OP_ADD:
             add_flag = [True, ast[i]['operand'][2]]
-        elif ast[i]['operand'][1] == OP_SUB:
+        elif operand == OP_SUB:
             sub_flag = [True, ast[i]['operand'][2]]
-        elif ast[i]['operand'][1] == OP_INT:
+        elif operand == OP_INT:
             makeshift_stack.append(ast[i]['operand'][2])
         if print_arithmetic_flag == True and len(makeshift_stack) == mul_flag[1] and len(makeshift_stack) >= 2:
             mul_stack = makeshift_stack
@@ -145,7 +146,7 @@ def simulate_program():
             makeshift_stack = []
 
 
-def compile_x86_64():
+def compile_x86_64_nasm():
     program = [
         ["printa", "add2", "4", "5", "endl"],
         ["printa", "sub2", "10", "9", "endl"],
@@ -157,17 +158,52 @@ def compile_x86_64():
         ["printa", "div3", "500", "10", "2", "endl"]
     ]
     ast = generate_ast(program)
+
+    print_arithmetic_flag = False
+    add_flag              = [False, 0]
+    sub_flag              = [False, 0]
+    mul_flag              = [False, 0]
+    div_flag              = [False, 0]
+    
+    code = """section .text
+    global _start
+
+_start:
+    """
+    for i in range(len(ast)):
+        operand = ast[i]['operand'][1]
+        if operand == OP_PRINT:
+            if ast[i]['operand'][2] == 0:
+                print_arithmetic_flag = True
+        elif operand == OP_DIV:
+            div_flag = [True, ast[i]['operand'][2]]
+        elif operand == OP_MUL:
+            mul_flag = [True, ast[i]['operand'][2]]
+        elif operand == OP_ADD:
+            add_flag = [True, ast[i]['operand'][2]]
+        elif operand == OP_SUB:
+            sub_flag = [True, ast[i]['operand'][2]]
+        elif operand == OP_INT:
+            code += f"\t; push {ast[i]['operand'][2]}\n\tmov rax, {ast[i]['operand'][2]}\n\tpush rax\n"
+        elif operand == OP_ENDL:
+            print_arithmetic_flag = False
+            add_flag = [False, 0]
+            sub_flag = [False, 0]
+            mul_flag = [False, 0]
+            div_flag = [False, 0]
+
+    print(code)
 # Basic command line styuff
 def command_line_utils():
     if sys.argv[1] == "help":
         print("""usage: ./pyhilasm.py program_file [args]
 sim - Simulates a program file
-cx86 - Compiles program according to the x86 ISA""")
+cx86NASM - Compiles program according to the x86 ISA(NASM Syntax)""")
         exit(0)
     elif sys.argv[1] == "sim":
         simulate_program()
-    elif sys.argv[1] == "cx86-64":
-        assert False, "Not implemented"
+    elif sys.argv[1] == "cx86NASM":
+        compile_x86_64_nasm()
     else:
         print("Not found")
         exit(1)
