@@ -27,22 +27,8 @@ OP_DIV    = iota()
 OP_PRINT  = iota()
 OP_ENDL   = iota()
 OP_INT    = iota()
-
-def simulate_program():
-    program = [
-        ["printa", "add2", "4", "5", "endl"],
-        ["printa", "sub2", "10", "9", "endl"],
-        ["printa", "mult2", "10", "5", "endl"],
-        ["printa", "div2", "500", "10", "endl"],
-        ["printa", "sub3", "5", "9", "3", "endl"],
-        ["printa", "add3", "2", "5", "8", "endl"],
-        ["printa", "mult3", "59", "9", "38", "endl"],
-        ["printa", "div3", "500", "10", "2", "endl"]
-    ] # At this moment, currently hardcoded
-
-
-    ast = [] # Program as pure numeric values
-    numbered_program = []
+def generate_ast(program):
+    ast = []
     for line_num, line in enumerate(program, start=1):
         for bit in line:
             if bit == "printa":
@@ -81,7 +67,21 @@ def simulate_program():
                     'operand': ["INT", OP_INT, int(bit)]
                 })
 
-    #flags, helps the program know whats happenning
+    return ast
+
+def simulate_program():
+    program = [
+        ["printa", "add2", "4", "5", "endl"],
+        ["printa", "sub2", "10", "9", "endl"],
+        ["printa", "mult2", "10", "5", "endl"],
+        ["printa", "div2", "500", "10", "endl"],
+        ["printa", "sub3", "5", "9", "3", "endl"],
+        ["printa", "add3", "2", "5", "8", "endl"],
+        ["printa", "mult3", "59", "9", "38", "endl"],
+        ["printa", "div3", "500", "10", "2", "endl"]
+    ] # At this moment, currently hardcoded
+
+    ast = generate_ast(program) # Creates an "AST" which is semi-human readable
     print_arithmetic_flag = False
     add_flag = [False, 0]
     sub_flag = [False, 0]
@@ -143,6 +143,20 @@ def simulate_program():
             mul_flag = [False, 0]
             div_flag = [False, 0]
             makeshift_stack = []
+
+
+def compile_x86_64():
+    program = [
+        ["printa", "add2", "4", "5", "endl"],
+        ["printa", "sub2", "10", "9", "endl"],
+        ["printa", "mult2", "10", "5", "endl"],
+        ["printa", "div2", "500", "10", "endl"], 
+        ["printa", "sub3", "5", "9", "3", "endl"],
+        ["printa", "add3", "2", "5", "8", "endl"],
+        ["printa", "mult3", "59", "9", "38", "endl"], 
+        ["printa", "div3", "500", "10", "2", "endl"]
+    ]
+    ast = generate_ast(program)
 # Basic command line styuff
 def command_line_utils():
     if sys.argv[1] == "help":
