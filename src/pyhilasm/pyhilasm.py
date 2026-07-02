@@ -164,11 +164,20 @@ def compile_x86_64_nasm():
     sub_flag              = [False, 0]
     mul_flag              = [False, 0]
     div_flag              = [False, 0]
+    makeshift_stack       = []
     
     code = """section .text
     global _start
 
+.add_loop:
+    pop rbx 
+
+    add eax, rbx
+    dec ecx
+    jnz .add_loop
+
 _start:
+    mov eax, 0 ; calculation buffer
     """
     for i in range(len(ast)):
         operand = ast[i]['operand'][1]
@@ -185,12 +194,25 @@ _start:
             sub_flag = [True, ast[i]['operand'][2]]
         elif operand == OP_INT:
             code += f"\t; push {ast[i]['operand'][2]}\n\tmov rax, {ast[i]['operand'][2]}\n\tpush rax\n"
+            makeshift_stack.append(ast[i]['operand'][2])
         elif operand == OP_ENDL:
             print_arithmetic_flag = False
-            add_flag = [False, 0]
-            sub_flag = [False, 0]
-            mul_flag = [False, 0]
-            div_flag = [False, 0]
+            add_flag              = [False, 0]
+            sub_flag              = [False, 0]
+            mul_flag              = [False, 0]
+            div_flag              = [False, 0]
+            makeshift_stack       = []
+        if print_arithmetic_flag == True and len(makeshift_stack) == add_flag[1] and len(makeshift_stack) >= 2:
+            # python code below
+            # add_stack = makeshift_stack
+            # while len(add_stack) > 1:
+            #   y = makeshift_stack.pop()
+            #   x = makeshift_stack.pop()
+            #   add_stack.append(x+y)
+
+            code += f"\tmov ecx, {add_flag[1]}\n\tcall add_loop\n" 
+
+    code += "\tmov rax, 60 ; syscall: exit\n\txor rdi, rdi ; exit code 0\n\tsyscall"
 
     print(code)
 # Basic command line styuff
