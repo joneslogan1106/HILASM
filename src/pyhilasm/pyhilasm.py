@@ -166,15 +166,36 @@ def compile_x86_64_nasm():
     div_flag              = [False, 0]
     makeshift_stack       = []
     
-    code = """section .text
+    code = """section .bss
+    buffer resb 21
+section .text
     global _start
 
 .add_loop:
     pop rbx 
 
-    add eax, rbx
-    dec ecx
+    add eax, ebx
+    dec ecx ; amount of numbers being added
     jnz .add_loop
+
+
+.convert_to_string:
+    xor rdx, rdx
+    mov r8, 10
+    div r8
+
+    add dl, '0'
+    dec rsi
+    mov [rsi], dl
+
+    test rax, rax
+    jnz .convert
+
+    mov rax, 1
+    mov rdi, 1
+    mov rdx, buffer+21
+    sub rdx, rsi
+    syscall
 
 _start:
     mov eax, 0 ; calculation buffer
@@ -193,7 +214,7 @@ _start:
         elif operand == OP_SUB:
             sub_flag = [True, ast[i]['operand'][2]]
         elif operand == OP_INT:
-            code += f"\t; push {ast[i]['operand'][2]}\n\tmov rax, {ast[i]['operand'][2]}\n\tpush rax\n"
+            code += f"\t; push {ast[i]['operand'][2]}\n\tpush {ast[i]['operand'][2]}\n"
             makeshift_stack.append(ast[i]['operand'][2])
         elif operand == OP_ENDL:
             print_arithmetic_flag = False
@@ -202,7 +223,7 @@ _start:
             mul_flag              = [False, 0]
             div_flag              = [False, 0]
             makeshift_stack       = []
-        if print_arithmetic_flag == True and len(makeshift_stack) == add_flag[1] and len(makeshift_stack) >= 2:
+        if len(makeshift_stack) == add_flag[1] and len(makeshift_stack) >= 2:
             # python code below
             # add_stack = makeshift_stack
             # while len(add_stack) > 1:
@@ -210,7 +231,9 @@ _start:
             #   x = makeshift_stack.pop()
             #   add_stack.append(x+y)
 
-            code += f"\tmov ecx, {add_flag[1]}\n\tcall add_loop\n" 
+            code += f"\tmov ecx, {add_flag[1]} ; amount of numbers being added\n\tcall .add_loop ; actually runs the addition loop\n"
+        if print_arithmetic_flag == True and len(makeshift_stack) == add_flag[1] and len(makeshift_stack) >= 2:
+            code += f"\tmov rax, eax\n\tcall .convert_to_string\n"
 
     code += "\tmov rax, 60 ; syscall: exit\n\txor rdi, rdi ; exit code 0\n\tsyscall"
 
@@ -224,7 +247,7 @@ cx86NASM - Compiles program according to the x86 ISA(NASM Syntax)""")
         exit(0)
     elif sys.argv[1] == "sim":
         simulate_program()
-    elif sys.argv[1] == "cx86NASM":
+    elif sys.argv[1] == "cx86-64NASM":
         compile_x86_64_nasm()
     else:
         print("Not found")
