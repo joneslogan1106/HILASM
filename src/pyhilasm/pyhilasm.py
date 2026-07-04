@@ -167,38 +167,21 @@ def compile_x86_64_nasm():
     makeshift_stack       = []
     
     code = """section .bss
-    buffer resb 21
+\tbuffer resb 21
 section .text
-    global _start
+\tglobal _start
 
 .add_loop:
-    pop rbx 
+\tpop r8 ; moves the value from the top of the stack into edx
 
-    add eax, ebx
-    dec ecx ; amount of numbers being added
-    jnz .add_loop
+\tadd eax, r8
+\tdec ecx ; amount of numbers being added
+\tjnz .add_loop
 
-
-.convert_to_string:
-    xor rdx, rdx
-    mov r8, 10
-    div r8
-
-    add dl, '0'
-    dec rsi
-    mov [rsi], dl
-
-    test rax, rax
-    jnz .convert
-
-    mov rax, 1
-    mov rdi, 1
-    mov rdx, buffer+21
-    sub rdx, rsi
-    syscall
 
 _start:
-    mov eax, 0 ; calculation buffer
+\tmov eax, 0 ; calculation result
+\tmov ecx, 0 ; this is the amount of numbers being added in a arithmetic operation
     """
     for i in range(len(ast)):
         operand = ast[i]['operand'][1]
@@ -211,6 +194,7 @@ _start:
             mul_flag = [True, ast[i]['operand'][2]]
         elif operand == OP_ADD:
             add_flag = [True, ast[i]['operand'][2]]
+            code += f"\t; sets the argument number for addition to {ast[i]['operand'][2]}\n\tmov ecx, {ast[i]['operand'][2]} ; sets the amount of numbers expected in an addition equation\n"
         elif operand == OP_SUB:
             sub_flag = [True, ast[i]['operand'][2]]
         elif operand == OP_INT:
@@ -231,9 +215,10 @@ _start:
             #   x = makeshift_stack.pop()
             #   add_stack.append(x+y)
 
-            code += f"\tmov ecx, {add_flag[1]} ; amount of numbers being added\n\tcall .add_loop ; actually runs the addition loop\n"
+            pass
+
         if print_arithmetic_flag == True and len(makeshift_stack) == add_flag[1] and len(makeshift_stack) >= 2:
-            code += f"\tmov rax, eax\n\tcall .convert_to_string\n"
+            pass
 
     code += "\tmov rax, 60 ; syscall: exit\n\txor rdi, rdi ; exit code 0\n\tsyscall"
 
