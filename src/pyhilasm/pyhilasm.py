@@ -167,9 +167,30 @@ def compile_x86_64_nasm():
     makeshift_stack       = []
     
     code = """section .bss
-\tbuffer resb 21
+\tbufferNum resb 21 ; Gives 21 bytes of buffer space for max 64-bit int
 section .text
 \tglobal _start
+
+print_arithmetic_loop:
+\txor rdx, rdx ; frees up the rdx register before division
+\tdiv rbx ; divides rdx:rax by 10 where rax is the quotient, and rdx is the raimnder
+\tadd dl, '0' ; converts remainder digit to ASCII
+\tdec rcx ; move buffer point backward
+\tmov [rcx], dl ; store ascii character in buffer
+\ttest rax, rax ; check if quotient is 0
+\tjnz print_arithmetic_loop ; if not 0 loop again to get next digit
+
+\t; string lenth calc
+\t; length formula: (base addr +20) - current pointer
+\tmov rdx, bufferNum ; load base addr into rdx
+\tadd rdx, 20 ; add 20
+\tsub rdx, rcx ; subtract current pointer positon
+
+\t; sys_write syscall
+\tmov rax, 1 ; sys_write
+\tmov rdi, 1 ; stdout
+\tmov rsi, rcx ; rsi = actual first digit
+\tsyscall
 
 .add_loop:
 \tpop rdx ; moves the value from the top of the stack into edx
@@ -215,7 +236,13 @@ _start:
             #   x = makeshift_stack.pop()
             #   add_stack.append(x+y)
 
-            pass
+            code += """\t; print adding
+\tmov rax, r8 ; number being printed
+\tmov rcx, bufferNum ; point rcx to end of buffer
+\tadd rcx, 20 ; point it to the full end of the buffer
+\tmov byte [rcx], 10 ; divisor always set to 10
+\tjmp print_arithmetic_loop ; calls the print loop
+"""
 
         if print_arithmetic_flag == True and len(makeshift_stack) == add_flag[1] and len(makeshift_stack) >= 2:
             pass
