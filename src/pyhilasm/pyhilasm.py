@@ -172,15 +172,15 @@ section .text
 \tglobal _start
 
 .add_loop:
-\tpop r8 ; moves the value from the top of the stack into edx
+\tpop rdx ; moves the value from the top of the stack into edx
 
-\tadd eax, r8
+\tadd r8, rdx
 \tdec ecx ; amount of numbers being added
 \tjnz .add_loop
 
 
 _start:
-\tmov eax, 0 ; calculation result
+\tmov r8, 0 ; calculation result
 \tmov ecx, 0 ; this is the amount of numbers being added in a arithmetic operation
     """
     for i in range(len(ast)):
