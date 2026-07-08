@@ -228,14 +228,14 @@ _start:
             mul_flag              = [False, 0]
             div_flag              = [False, 0]
             makeshift_stack       = []
-        if len(makeshift_stack) == add_flag[1] and len(makeshift_stack) >= 2:
+        if print_arithmetic_flag == True and len(makeshift_stack) == add_flag[1] and len(makeshift_stack) >= 2:
+            code += "\tcall .add_loop\n"
             # python code below
             # add_stack = makeshift_stack
             # while len(add_stack) > 1:
             #   y = makeshift_stack.pop()
             #   x = makeshift_stack.pop()
             #   add_stack.append(x+y)
-
             code += """\t; print adding
 \tmov rax, r8 ; number being printed
 \tmov rcx, bufferNum ; point rcx to end of buffer
